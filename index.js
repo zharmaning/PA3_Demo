@@ -2,6 +2,8 @@ const express = require("express");
 
 const app = express();
 
+let connection = null;
+
 async function query(sql, params) {
     //Singleton DB connection
     if (null === connection) {
