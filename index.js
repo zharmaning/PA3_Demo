@@ -20,33 +20,30 @@ async function query(sql, params) {
 
 app.use(express.json());
 
-app.post("/api/sensor", (req, res) => {
+app.post("/api/sensor", async (req, res) => {
     console.log(req.body);
     const button = req.body.buttonPressed ? 1 : 0;
 
-    async () => {
-        const sql = `
+    const sql = `
         INSERT INTO arduino_input
         (Button)
         VALUES (?)
     `;
 
-        try {
-            await query(sql, [button]);
+    try {
+        await query(sql, [button]);
 
-            res.json({
-                message: "Sensor data received",
-                button: button
-            });
-        } catch (error) {
-            console.error(error);
+        res.json({
+            message: "Sensor data received",
+            button: button
+        });
+    } catch (error) {
+        console.error(error);
 
-            res.status(500).json({
-                message: "Database error"
-            });
-        }
+        res.status(500).json({
+            message: "Database error"
+        });
     }
-
     // res.json({
     //     message: "Sensor data received"
     // });
