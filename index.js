@@ -24,15 +24,32 @@ app.post("/api/sensor", (req, res) => {
     console.log(req.body);
     const button = req.body.buttonPressed ? 1 : 0;
 
-    const sql = `
+    async () => {
+        const sql = `
         INSERT INTO arduino_input
         (Button)
         VALUES (?)
     `;
 
-    res.json({
-        message: "Sensor data received"
-    });
+        try {
+            await query(sql, [button]);
+
+            res.json({
+                message: "Sensor data received",
+                button: button
+            });
+        } catch (error) {
+            console.error(error);
+
+            res.status(500).json({
+                message: "Database error"
+            });
+        }
+    }
+
+    // res.json({
+    //     message: "Sensor data received"
+    // });
 });
 
 app.listen(3000, () => {
