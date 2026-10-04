@@ -32,6 +32,7 @@ app.post("/api/sensor", async (req, res) => {
 
     try {
         await query(sql, [button]);
+        console.log("Successfully inserted:", button);
 
         res.json({
             message: "Sensor data received",
@@ -39,14 +40,12 @@ app.post("/api/sensor", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        console.error("DATABASE ERROR:", error);
 
         res.status(500).json({
             message: "Database error"
         });
     }
-    // res.json({
-    //     message: "Sensor data received"
-    // });
 });
 
 app.listen(3000, () => {
