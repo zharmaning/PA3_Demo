@@ -22,20 +22,14 @@ app.use(express.json());
 
 app.post("/api/sensor", (req, res) => {
     console.log(req.body);
-    if (req.body == "buttonPressed: true") {
-        const sql = `
-                INSERT INTO arduino_input
-                (Button)
-                VALUES (1)
-            `;
-    }
-    if (req.body == "buttonPressed: false") {
-        const sql = `
-                INSERT INTO arduino_input
-                (Button)
-                VALUES (0)
-            `;
-    }
+    const button = req.body.buttonPressed ? 1 : 0;
+
+    const sql = `
+        INSERT INTO arduino_input
+        (Button)
+        VALUES (?)
+    `;
+
     res.json({
         message: "Sensor data received"
     });
