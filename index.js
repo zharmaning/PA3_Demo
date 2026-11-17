@@ -24,6 +24,8 @@ app.use(express.json());
 
 app.post("/api/sensor", async (req, res) => {
     console.log(req.body);
+    console.log("Received body:", req.body);
+    console.log("Received temperature:", req.body.temperatureC);
     // const button = req.body.buttonPressed ? 1 : 0;
     const temperature = req.body;
 
