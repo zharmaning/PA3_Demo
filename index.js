@@ -24,10 +24,11 @@ app.use(express.json());
 
 app.post("/api/sensor", async (req, res) => {
     console.log(req.body);
+    const temperature = req.body.temperatureC;
     console.log("Received body:", req.body);
     console.log("Received temperature:", req.body.temperatureC);
     // const button = req.body.buttonPressed ? 1 : 0;
-    const temperature = req.body;
+    // const temperature = req.body;
 
     const sql = `
         INSERT INTO arduino_input
