@@ -54,27 +54,27 @@ app.use(express.json());
 app.post("/api/sensor", async (req, res) => {
     console.log("Received body:", req.body);
 
-    if (!req.body || req.body.temperatureC === undefined) {
+    if (!req.body || req.body.lightLevel === undefined) {
         return res.status(400).json({
-            message: "Missing temperature data",
+            message: "Missing light data",
             received: req.body
         });
     }
 
-    const temperature = req.body.temperatureC;
+    const lightLevel = req.body.lightLevel;
 
     const sql = `
         INSERT INTO arduino_input
-        (temperature)
+        (light)
         VALUES (?)
     `;
 
     try {
-        await query(sql, [temperature]);
+        await query(sql, [lightLevel]);
 
         res.json({
             message: "Sensor data received",
-            temperature: temperature
+            lightLevel: lightLevel
         });
     } catch (error) {
         console.error(error);
