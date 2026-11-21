@@ -22,13 +22,46 @@ async function query(sql, params) {
 
 app.use(express.json());
 
+// app.post("/api/sensor", async (req, res) => {
+//     console.log(req.body);
+//     const temperature = req.body.temperatureC;
+//     console.log("Received body:", req.body);
+//     console.log("Received temperature:", req.body.temperatureC);
+//     // const temperature = req.body;
+
+//     const sql = `
+//         INSERT INTO arduino_input
+//         (temperature)
+//         VALUES (?)
+//     `;
+
+//     try {
+//         await query(sql, [temperature]);
+
+//         res.json({
+//             message: "Sensor data received",
+//             temperature: temperature
+//         });
+//     } catch (error) {
+//         console.error(error);
+
+//         res.status(500).json({
+//             message: "Database error"
+//         });
+//     }
+// });
+
 app.post("/api/sensor", async (req, res) => {
-    console.log(req.body);
-    const temperature = req.body.temperatureC;
     console.log("Received body:", req.body);
-    console.log("Received temperature:", req.body.temperatureC);
-    // const button = req.body.buttonPressed ? 1 : 0;
-    // const temperature = req.body;
+
+    if (!req.body || req.body.temperatureC === undefined) {
+        return res.status(400).json({
+            message: "Missing temperature data",
+            received: req.body
+        });
+    }
+
+    const temperature = req.body.temperatureC;
 
     const sql = `
         INSERT INTO arduino_input
@@ -45,10 +78,7 @@ app.post("/api/sensor", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-
-        res.status(500).json({
-            message: "Database error"
-        });
+        res.status(500).json({ message: "Database error" });
     }
 });
 
