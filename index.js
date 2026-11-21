@@ -1,7 +1,30 @@
+require("dotenv").config();
 const express = require("express");
 
 const app = express();
 const mysql = require('mysql2/promise');
+const twilio = require("twilio");
+const DARKNESS_LIMIT = 300;
+
+const ALERT_COOLDOWN = 5 * 60 * 1000;
+
+let lastAlertTime = 0;
+let alertInProgress = false;
+
+const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+);
+
+async function sendTextMessage() {
+    const message = await client.messages.create({
+        body: "sms_internal_alerts",
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: process.env.MY_PHONE_NUMBER
+    });
+
+    console.log("SMS submitted:", message.sid);
+}
 
 let connection = null;
 
@@ -21,35 +44,6 @@ async function query(sql, params) {
 }
 
 app.use(express.json());
-
-// app.post("/api/sensor", async (req, res) => {
-//     console.log(req.body);
-//     const temperature = req.body.temperatureC;
-//     console.log("Received body:", req.body);
-//     console.log("Received temperature:", req.body.temperatureC);
-//     // const temperature = req.body;
-
-//     const sql = `
-//         INSERT INTO arduino_input
-//         (temperature)
-//         VALUES (?)
-//     `;
-
-//     try {
-//         await query(sql, [temperature]);
-
-//         res.json({
-//             message: "Sensor data received",
-//             temperature: temperature
-//         });
-//     } catch (error) {
-//         console.error(error);
-
-//         res.status(500).json({
-//             message: "Database error"
-//         });
-//     }
-// });
 
 app.post("/api/sensor", async (req, res) => {
     console.log("Received body:", req.body);
@@ -75,6 +69,25 @@ app.post("/api/sensor", async (req, res) => {
         VALUES (?)
     `;
 
+    // Twilio piece
+    if (
+        light < DARKNESS_LIMIT &&
+        !alertInProgress &&
+        now - lastAlertTime >= ALERT_COOLDOWN
+    ) {
+        alertInProgress = true;
+
+        try {
+            await sendTextMessage();
+            lastAlertTime = Date.now();
+        } catch (error) {
+            console.error("SMS error:", error.message);
+        } finally {
+            alertInProgress = false;
+        }
+    }
+
+    // Back to reading sensor data
     try {
         await query(sql, [light]);
 
