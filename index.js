@@ -61,7 +61,13 @@ app.post("/api/sensor", async (req, res) => {
         });
     }
 
-    const lightLevel = req.body.lightLevel;
+    const light = Number(req.body.lightLevel);
+
+    if (!Number.isFinite(light)) {
+        return res.status(400).json({
+            message: "Invalid light data"
+        });
+    }
 
     const sql = `
         INSERT INTO arduino_input
@@ -70,15 +76,19 @@ app.post("/api/sensor", async (req, res) => {
     `;
 
     try {
-        await query(sql, [lightLevel]);
+        await query(sql, [light]);
 
         res.json({
             message: "Sensor data received",
-            lightLevel: lightLevel
+            light: light
         });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Database error" });
+        console.error("DATABASE ERROR:", error);
+
+        res.status(500).json({
+            message: "Database error"
+        });
     }
 });
 
