@@ -6,6 +6,7 @@ const mysql = require('mysql2/promise');
 const twilio = require("twilio");
 const DARKNESS_LIMIT = 300;
 
+const now = Date.now();
 const ALERT_COOLDOWN = 5 * 60 * 1000;
 
 let lastAlertTime = 0;
