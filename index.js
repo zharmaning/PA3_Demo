@@ -69,23 +69,23 @@ app.post("/api/sensor", async (req, res) => {
         VALUES (?)
     `;
 
-    // Twilio piece
-    if (
-        light < DARKNESS_LIMIT &&
-        !alertInProgress &&
-        now - lastAlertTime >= ALERT_COOLDOWN
-    ) {
-        alertInProgress = true;
+    // // Twilio piece
+    // if (
+    //     light < DARKNESS_LIMIT &&
+    //     !alertInProgress &&
+    //     now - lastAlertTime >= ALERT_COOLDOWN
+    // ) {
+    //     alertInProgress = true;
 
-        try {
-            await sendTextMessage();
-            lastAlertTime = Date.now();
-        } catch (error) {
-            console.error("SMS error:", error.message);
-        } finally {
-            alertInProgress = false;
-        }
-    }
+    //     try {
+    //         await sendTextMessage();
+    //         lastAlertTime = Date.now();
+    //     } catch (error) {
+    //         console.error("SMS error:", error.message);
+    //     } finally {
+    //         alertInProgress = false;
+    //     }
+    // }
 
     // Back to reading sensor data
     try {
@@ -102,6 +102,24 @@ app.post("/api/sensor", async (req, res) => {
         res.status(500).json({
             message: "Database error"
         });
+    }
+
+    // Twilio piece
+    if (
+        light < DARKNESS_LIMIT &&
+        !alertInProgress &&
+        now - lastAlertTime >= ALERT_COOLDOWN
+    ) {
+        alertInProgress = true;
+
+        try {
+            await sendTextMessage();
+            lastAlertTime = Date.now();
+        } catch (error) {
+            console.error("SMS error:", error.message);
+        } finally {
+            alertInProgress = false;
+        }
     }
 });
 
