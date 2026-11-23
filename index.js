@@ -1,8 +1,15 @@
-const express = require("express");
+import express from "express";
 
 const app = express();
-const mysql = require('mysql2/promise');
+import mysql from "mysql2/promise";
 let connection = null;
+
+// necessary twilio
+const DARKNESS_LIMIT = 300;
+const now = Date.now();
+const ALERT_COOLDOWN = 5 * 60 * 1000;
+let lastAlertTime = 0;
+let alertInProgress = false;
 
 import {sendTextMessage} from './twilio.js';
 

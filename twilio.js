@@ -1,12 +1,5 @@
-require("dotenv").config();
-const twilio = require("twilio");
-const DARKNESS_LIMIT = 300;
-
-const now = Date.now();
-const ALERT_COOLDOWN = 5 * 60 * 1000;
-
-let lastAlertTime = 0;
-let alertInProgress = false;
+import "dotenv/config"
+import twilio from "twilio"
 
 const client = twilio(
     process.env.TWILIO_ACCOUNT_SID,
@@ -24,23 +17,3 @@ async function sendTextMessage() {
 }
 
 export {sendTextMessage};
-
-// Twilio piece
-// async function checkMessage() {
-//     if (
-//         light < DARKNESS_LIMIT &&
-//         !alertInProgress &&
-//         now - lastAlertTime >= ALERT_COOLDOWN
-//     ) {
-//         alertInProgress = true;
-
-//         try {
-//             await sendTextMessage();
-//             lastAlertTime = Date.now();
-//         } catch (error) {
-//             console.error("SMS error:", error.message);
-//         } finally {
-//             alertInProgress = false;
-//         }
-//     }
-// }
