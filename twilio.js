@@ -1,5 +1,5 @@
-import "dotenv/config"
-import twilio from "twilio"
+import "dotenv/config";
+import twilio from "twilio";
 
 const client = twilio(
     process.env.TWILIO_ACCOUNT_SID,
