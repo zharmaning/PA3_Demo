@@ -7,6 +7,7 @@ const client = twilio(
 );
 
 async function sendTextMessage() {
+    console.log("Recipient configured:", Boolean(process.env.MY_PHONE_NUMBER));
     const message = await client.messages.create({
         body: "sms_internal_alerts",
         from: process.env.TWILIO_PHONE_NUMBER,
