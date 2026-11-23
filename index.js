@@ -1,33 +1,10 @@
-require("dotenv").config();
 const express = require("express");
 
 const app = express();
 const mysql = require('mysql2/promise');
-const twilio = require("twilio");
-const DARKNESS_LIMIT = 300;
-
-const now = Date.now();
-const ALERT_COOLDOWN = 5 * 60 * 1000;
-
-let lastAlertTime = 0;
-let alertInProgress = false;
-
-const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-);
-
-async function sendTextMessage() {
-    const message = await client.messages.create({
-        body: "sms_internal_alerts",
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: process.env.MY_PHONE_NUMBER
-    });
-
-    console.log("SMS submitted:", message.sid);
-}
-
 let connection = null;
+
+import {sendTextMessage} from './twilio.js';
 
 async function query(sql, params) {
     //Singleton DB connection
@@ -70,7 +47,7 @@ app.post("/api/sensor", async (req, res) => {
         VALUES (?)
     `;
 
-    // Twilio piece
+    // twilio bit
     if (
         light < DARKNESS_LIMIT &&
         !alertInProgress &&
